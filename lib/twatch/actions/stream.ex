@@ -23,6 +23,18 @@ defmodule Twatch.Actions.Stream do
     end
   end
 
+  def ensure_mature_accepted do
+    case xpath_all("//button[@id='mature-link']") do
+      [elem] ->
+        Logger.info("Clicking mature accept link.")
+        Element.click(elem)
+        :halt
+
+      [] ->
+        :cont
+    end
+  end
+
   defp is_category(want) do
     xpath_all("//a[@data-a-target='stream-game-link']")
     |> Enum.any?(fn elem ->

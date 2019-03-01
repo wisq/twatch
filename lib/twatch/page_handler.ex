@@ -13,17 +13,16 @@ defmodule Twatch.PageHandler do
   end
 
   def execute(%PageHandler{actions: actions}) do
-    Enum.reduce_while(actions, nil, fn action, nil ->
+    Enum.reduce_while(actions, :cont, fn action, _acc ->
       Logger.debug("Executing: #{inspect(action)}")
 
       case action.() do
         :cont ->
-          Logger.debug("Continuing.")
-          {:cont, nil}
+          {:cont, :cont}
 
         :halt ->
-          Logger.debug("Halting.")
-          {:halt, nil}
+          Logger.debug("Halting actions.")
+          {:halt, :halt}
       end
     end)
   end
