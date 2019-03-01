@@ -3,6 +3,7 @@ defmodule Mix.Tasks.Twatch.Warships do
   require Logger
 
   alias Twatch.{Config, Credentials, PageHandler, Actions, Watcher}
+  alias Twatch.Actions.Category.Filters
 
   @shortdoc "Watch a World of Warships stream"
 
@@ -34,7 +35,8 @@ defmodule Mix.Tasks.Twatch.Warships do
           match: "https://www.twitch.tv/directory/game/World of Warships",
           actions: [
             Actions.ensure_logged_in(login),
-            Actions.pick_stream(0..4)
+            Actions.pick_stream(0..2, Filters.channel_name(~r{drop|container}i)),
+            Actions.pick_stream(0..2)
           ]
         },
         # Individual stream page:

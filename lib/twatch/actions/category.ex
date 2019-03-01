@@ -3,15 +3,24 @@ defmodule Twatch.Actions.Category do
   alias Hound.Helpers.Element
   import Twatch.Helpers
 
-  def pick_stream(indices) do
-    index_streams_by_range()
+  def pick_stream(indices, filter_fn \\ fn _ -> true end) do
+    find_all_streams()
+    |> Enum.filter(filter_fn)
     |> pick_from_range(indices)
-    |> Element.click()
+    |> maybe_click()
+  end
 
+  defp maybe_click(nil) do
+    Logger.warn("No stream selected.")
+    :cont
+  end
+
+  defp maybe_click(elem) do
+    Element.click(elem)
     :halt
   end
 
-  defp index_streams_by_range do
+  defp find_all_streams do
     xpath_all("//a[@data-a-target='preview-card-title-link']")
   end
 
@@ -20,23 +29,20 @@ defmodule Twatch.Actions.Category do
   end
 
   defp pick_from_range(links, %Range{} = range) do
-    Logger.info("Selecting stream from range #{inspect(range)} ...")
-    pairs = Enum.with_index(links)
-
-    case Enum.slice(pairs, range) do
+    case Enum.with_index(links) |> Enum.slice(range) do
       [] ->
-        {elem, index} = Enum.random(pairs)
-        Logger.warn("No streams found.  Choosing random stream ##{index} instead.")
-        elem
+        Logger.warn("No streams found in range #{inspect(range)}.")
+        nil
 
       list ->
         {_, first} = List.first(list)
         {_, last} = List.last(list)
         actual_range = first..last
-        Logger.info("Available streams are #{inspect(actual_range)}.")
+        Logger.info("Selected range #{inspect(range)}, got #{inspect(actual_range)}.")
 
         {elem, index} = Enum.random(list)
-        Logger.info("Choosing stream ##{index}.")
+        title = Element.visible_text(elem)
+        Logger.info("Choosing stream ##{index}: #{inspect(title)}")
         elem
     end
   end
