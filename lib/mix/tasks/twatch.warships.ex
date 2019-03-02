@@ -47,7 +47,8 @@ defmodule Mix.Tasks.Twatch.Warships do
             Actions.ensure_mature_accepted(),
             Actions.ensure_category("World of Warships"),
             Actions.ensure_not_hosting(),
-            Actions.ensure_image_changing()
+            Actions.ensure_image_changing(),
+            Actions.prevent_idle()
           ]
         }
       ]

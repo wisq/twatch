@@ -7,6 +7,7 @@ defmodule Twatch.Actions do
   def ensure_category(name), do: fn -> Stream.ensure_category(name) end
   def ensure_not_hosting, do: fn -> Stream.ensure_not_hosting() end
   def ensure_mature_accepted, do: fn -> Stream.ensure_mature_accepted() end
+  def prevent_idle, do: fn -> Stream.prevent_idle() end
 
   def ensure_image_changing do
     {:ok, path} = Briefly.create(directory: true)

@@ -1,6 +1,6 @@
 defmodule Twatch.Actions.Stream do
   require Logger
-  alias Hound.Helpers.Element
+  alias Hound.Helpers.{Page, Element}
   import Twatch.Helpers
 
   def ensure_category(name) do
@@ -33,6 +33,29 @@ defmodule Twatch.Actions.Stream do
       [] ->
         :cont
     end
+  end
+
+  def prevent_idle do
+    move_mouse_randomly()
+    type_in_chat()
+    :cont
+  end
+
+  defp move_mouse_randomly do
+    body = Page.find_element(:tag, "body")
+    {size_x, size_y} = Element.element_size(body)
+    {off_x, off_y} = Element.element_location(body)
+
+    x = Enum.random(0..size_x) + off_x
+    y = Enum.random(0..size_y) + off_y
+    Element.move_to(body, x, y)
+  end
+
+  defp type_in_chat do
+    xpath("//textarea[@data-a-target='chat-input']") |> Element.click()
+    Page.send_text("   ")
+    Process.sleep(100)
+    Page.send_keys([:backspace, :backspace, :backspace])
   end
 
   defp is_category(want) do
